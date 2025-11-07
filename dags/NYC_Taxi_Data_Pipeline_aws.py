@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.sdk import Variable
 from datetime import datetime, timedelta
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 import pyarrow.parquet as pq
 import pandas as pd
 import requests
@@ -13,7 +14,6 @@ DEBUG = True
 BUCKET_NAME = "amzn-s3-bucket-25"
 BUCKET_RAW_DATA_FOLDER= paths.BUCKET_RAW_DATA_FOLDER
 
-s3_client = boto3.client("s3")
 
 def download_green_taxi_data():    
     """ This function downloads raw green taxi data into Google Cloud Storage
@@ -25,6 +25,9 @@ def download_green_taxi_data():
             None
     """
     base_url=paths.NYC_Green_Taxi_Data_URL
+
+    hook = S3Hook(aws_conn_id='aws_connection')
+    s3_client = hook.get_conn()
 
     today = datetime.today()
 

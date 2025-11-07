@@ -25,7 +25,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'EOF'
             # Set project folder
-            PROJ_DIR=/home/${{ secrets.GCP_VM_USER }}/cloud-airflow-data-pipeline
+            PROJ_DIR=/home/${{ secrets.GCP_VM_USER }}/aws-airflow-data-pipeline
             AIRFLOW_DIR=/home/${{ secrets.GCP_VM_USER }}/airflow
 
             # Create parent folder if it doesn't exist

@@ -40,7 +40,7 @@ def download_green_taxi_data():
 
         # Skip if file already exists (avoid duplicates)
         try:
-            s3_client.head_object(Bucket=BUCKET_NAME, key=s3_key)
+            s3_client.head_object(Bucket=BUCKET_NAME, Key=s3_key)
             print(f"{s3_key} already exists, skipping")
             continue
         except s3_client.exceptions.ClientError:

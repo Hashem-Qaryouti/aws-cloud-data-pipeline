@@ -57,7 +57,7 @@ def download_green_taxi_data():
         print(f"Uploading to gs://{BUCKET_NAME}/{s3_key}")
         s3_client.put_object(
             Bucket=BUCKET_NAME,
-            key=s3_key,
+            Key=s3_key,
             Body=response.content
         )
 

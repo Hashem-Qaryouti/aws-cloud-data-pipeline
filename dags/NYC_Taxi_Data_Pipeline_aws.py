@@ -92,7 +92,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id='NYC_Taxi_Data_AWS',
+    dag_id='NYC_Taxi_Data_AWS_Pipeline',
     default_args=default_args,
     description='A pipeline to process NYC Data',
     schedule='@daily',  # runs daily

@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main   # triggers when code is pushed to main
+    paths:
+      - 'dags/**'   # only trigger when files in dags/ change
 
 jobs:
   deploy:

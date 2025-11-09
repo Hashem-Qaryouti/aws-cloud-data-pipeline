@@ -79,3 +79,13 @@ cloud-airflow-data-pipeline/
 
     * `GCP_VM_HOST` = \<your-vm-ip\>
     * `GCP_VM_USER` = \<your-vm-username\>
+
+## ▶️ Usage
+
+* Add new DAGs to dags/ folder.
+
+* Push changes to main branch.
+
+* GitHub Actions deploys automatically.
+
+* Check Airflow UI (http://\<vm-ip>\:8080) for new DAGs.

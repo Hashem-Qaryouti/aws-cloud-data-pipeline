@@ -4,12 +4,6 @@
 This project demonstrates a cloud-based ETL (Extract–Transform–Load) data pipeline built using Apache Airflow on GCP and AWS services (S3, Glue, Data Catalog).
 It automates the extraction of NYC Green Taxi Trip data, transforms and stores it as Parquet files, and registers datasets for analytics and future transformations.
 
-- **LLaMA 3.2** (local GGUF model)
-- **SentenceTransformers** for embeddings
-- **Chroma** vector database
-- **Streamlit** for an interactive web interface
-- **PyPDF2** for PDF reading
-
 ---
 ## 🔁 System Architecture
 
@@ -23,15 +17,6 @@ Whenever a developer pushes code, the DAGs folder on the GCP VM is synced, ensur
 The crawler scans the S3 bucket, infers the schema, and registers metadata in the AWS Glue Data Catalog, making the data discoverable and queryable across AWS services
 - 5️⃣ Using the cataloged data, AWS Glue ETL Jobs can now perform transformations, cleansing, or enrichment tasks.
 - 6️⃣ The processed data from Glue is (or will be) loaded into Amazon Redshift, enabling SQL-based analytics and integration with BI tools such as QuickSight, Tableau, or Looker
-## Features
-
-- Load and split PDF documents into smaller chunks
-- Create embeddings with `SentenceTransformer`
-- Store embeddings in a persistent **Chroma vector database**
-- Query PDF content interactively using **LLaMA**
-- Streamlit app for live Q&A with multiple questions
-- Modular code for easy reuse
-
 ---
 
 ## 💡 Example: Streamlit App in Action

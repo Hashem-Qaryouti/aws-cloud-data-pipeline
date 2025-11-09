@@ -14,6 +14,15 @@ It automates the extraction of NYC Green Taxi Trip data, transforms and stores i
 ## 🔁 System Architecture
 
 ![RAG Workflow](assets/images/architecture.png)
+- 1️⃣ The developer writes or updates Airflow DAGs and ETL scripts locally.
+Once the code is ready, it’s pushed to a GitHub repository. This repo serves as the single source of truth for all DAGs and pipeline scripts.
+- 2️⃣ A GCP Virtual Machine hosts Apache Airflow, which is configured to automatically pull the latest DAGs from the GitHub repository.
+Whenever a developer pushes code, the DAGs folder on the GCP VM is synced, ensuring Airflow always runs the most up-to-date workflow.
+- 3️⃣ Airflow orchestrates the ETL job. The DAG extracts NYC Green Taxi Trip data (from the public dataset URL), processes it into Parquet format, and uploads the latest 12 months of data to an AWS S3 bucket.
+- 4️⃣ Once new data lands in S3, an AWS Glue Crawler is triggered.
+The crawler scans the S3 bucket, infers the schema, and registers metadata in the AWS Glue Data Catalog, making the data discoverable and queryable across AWS services
+- 5️⃣ Using the cataloged data, AWS Glue ETL Jobs can now perform transformations, cleansing, or enrichment tasks.
+- 6️⃣ The processed data from Glue is (or will be) loaded into Amazon Redshift, enabling SQL-based analytics and integration with BI tools such as QuickSight, Tableau, or Looker
 ## Features
 
 - Load and split PDF documents into smaller chunks

@@ -18,7 +18,29 @@ The crawler scans the S3 bucket, infers the schema, and registers metadata in th
 - 5️⃣ Using the cataloged data, AWS Glue ETL Jobs can now perform transformations, cleansing, or enrichment tasks.
 - 6️⃣ The processed data from Glue is (or will be) loaded into Amazon Redshift, enabling SQL-based analytics and integration with BI tools such as QuickSight, Tableau, or Looker
 ---
-
+## 📂 Repository Structure
+```
+cloud-airflow-data-pipeline/
+│
+├── dags/                     # Airflow DAGs that define ETL workflows
+│   └── NYC_Taxi_Data_Pipeline_aws.py   # DAG to extract and upload NYC Taxi data
+│
+├── scripts/                  # Helper & setup scripts
+│   └── setup_vm.sh           # Initializes GCP VM and sets up environment
+│
+├── assets/images             # Diagrams, screenshots, and visual documentation
+│   └── architecture.png      # ETL architecture diagram
+    └── demo_dag.png          # Demo Airflow DAG
+│
+├── .github/
+│   └── workflows/ci_cd.yml   # CI/CD pipeline for syncing DAGs to Airflow VM
+│
+├── requirements.txt          # Python dependencies for DAGs and scripts
+│
+├── LICENSE                   # License file (MIT or similar)
+│
+└── README.md                 # Project documentation
+```
 ## ⚙️ Setup
 1. Prerequisites
     * Google Cloud Platform (GCP) account.

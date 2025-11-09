@@ -4,107 +4,56 @@
 This project demonstrates a cloud-based ETL (Extract–Transform–Load) data pipeline built using Apache Airflow on GCP and AWS services (S3, Glue, Data Catalog).
 It automates the extraction of NYC Green Taxi Trip data, transforms and stores it as Parquet files, and registers datasets for analytics and future transformations.
 
-- **LLaMA 3.2** (local GGUF model)
-- **SentenceTransformers** for embeddings
-- **Chroma** vector database
-- **Streamlit** for an interactive web interface
-- **PyPDF2** for PDF reading
-
 ---
 ## 🔁 System Architecture
 
 ![RAG Workflow](assets/images/architecture.png)
-## Features
-
-- Load and split PDF documents into smaller chunks
-- Create embeddings with `SentenceTransformer`
-- Store embeddings in a persistent **Chroma vector database**
-- Query PDF content interactively using **LLaMA**
-- Streamlit app for live Q&A with multiple questions
-- Modular code for easy reuse
-
+- 1️⃣ The developer writes or updates Airflow DAGs and ETL scripts locally.
+Once the code is ready, it’s pushed to a GitHub repository. This repo serves as the single source of truth for all DAGs and pipeline scripts.
+- 2️⃣ A GCP Virtual Machine hosts Apache Airflow, which is configured to automatically pull the latest DAGs from the GitHub repository.
+Whenever a developer pushes code, the DAGs folder on the GCP VM is synced, ensuring Airflow always runs the most up-to-date workflow.
+- 3️⃣ Airflow orchestrates the ETL job. The DAG extracts NYC Green Taxi Trip data (from the public dataset URL), processes it into Parquet format, and uploads the latest 12 months of data to an AWS S3 bucket.
+- 4️⃣ Once new data lands in S3, an AWS Glue Crawler is triggered.
+The crawler scans the S3 bucket, infers the schema, and registers metadata in the AWS Glue Data Catalog, making the data discoverable and queryable across AWS services
+- 5️⃣ Using the cataloged data, AWS Glue ETL Jobs can now perform transformations, cleansing, or enrichment tasks.
+- 6️⃣ The processed data from Glue is (or will be) loaded into Amazon Redshift, enabling SQL-based analytics and integration with BI tools such as QuickSight, Tableau, or Looker
 ---
 
-## 💡 Example: Streamlit App in Action
+## ⚙️ Setup
+1. Prerequisites
+    * Google Cloud Platform (GCP) account.
+    * A running Ubuntu VM instance in GCP
+    * Open firwall ports:
+        * 22 -> SHH
+        * 8080 -> Airflow Web UI
+    * GitHub Repository with you DAGs and pipeline code.
 
-Once you run the Streamlit app, you’ll see an interface like this:
-![RAG PDF Q&A Example](assets/app_example.png)
+2. Install Docker & Airflow on the VM
+    - SSH into your VM:
+    `ssh <your-username>@<your-vm-external-ip>` 
+    - Then run the installation script:
+    ```
+    chmod +x ./scripts/setup_vm.sh
+    ./scripts/setup_vm.sh
+    ```  
+    - This will:
+        * Install Docker Engine and Docker Compose
+        * Download Airflow 3.0.6 docker-compose.yaml.
+        * Creates folders (`/dags`, `./plugins`, `/logs`).
+        * Initialize Airflow and start services.
 
-Ask questions about your PDF (for example):
+    - After installation, open Airflow UI in your browser:
+    `http://<your-vm-external-ip>:8080`
+![Alt text](assets/images/demo_dag.png)
 
-## Requirements
+3. Setup SSH Keys for CI/CD
+    - On your local machine:\
+    `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
 
-- Python 3.10+
-- Libraries (can be installed via `requirements.txt`):
+    * `id_rsa` → private key (add as GitHub secret: `GCP_SSH_KEY`).
+    * `id_rsa.pub` → public key (add to VM: `~/.ssh/authorized_keys`).
 
-```bash
-pip install -r requirements.txt
-```
----
+    - Also add the following GitHub repo secrets:
 
-## Project Structure
-```
-.
-├── data/
-│   └── vector_store/        # Vector DB storage (ignored by git)
-├── models/
-│   └── Dolphin3.0-Llama3.2-1B-Q4_K_M.gguf   # Local LLaMA model (ignored by git)
-├── src/
-│   ├── ingest_pdf.py        # Load PDF and extract text
-│   ├── split_text.py        # Split text into chunks
-│   ├── create_vectorstore.py # Create embeddings & Chroma vector store
-│   ├── RAG_pipeline.py      # Main functions: ask_question, load_llama_model
-│   └── app.py               # Streamlit app
-├── requirements.txt
-└── README.md
-```
----
-
-## Project Setup
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Hashem-Qaryouti/llama3-rag-pipeline.git
-cd <your-repo-name>
-```
-### 2. Create and activate a virtual environment
-```bash
-python -m venv llama_env
-```
-#### Activate the environment:
-- **Windows:**
-```bash
-llama_env\Scripts\activate
-```
-- **Linux:**
-```bash
-source llama_env/bin/activate
-```
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-
-```
-
-### 4. Add your PDF
-Place your PDF file in the `data/` folder.
-Update paths.py or the PDF_PATH variable in `ingest_pdf.py` to point to your PDF file.
-
-### 5. Add your LLaMA model
-
-Place your downloaded LLaMA GGUF model in the `models/` folder.
-Example:
-```bash
-models/Dolphin3.0-Llama3.2-1B-Q4_K_M.gguf
-```
----
-
-## Usage
-1. Run the Streamlit App
-```bash
-cd src
-streamlit run app.py
-```
-- **Open the URL shown in your terminal (usually http://localhost:8501):**
-- **Enter your question in the text box and click Ask**
-- **View the answer generated by LLaMA based on your PDF content**
+    * `GCP_VM_HOST` = \<your-vm-ip\>
+    * `GCP_VM_USER` = \<your-vm-username\>
